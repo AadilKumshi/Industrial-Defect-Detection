@@ -2,9 +2,6 @@
 
 A CNN-based industrial surface defect classification system that
 identifies defects in steel surface images using deep learning.
-
-## Overview
-
 The system uses a custom-trained CNN built with TensorFlow/Keras to
 classify steel surface images into six defect categories:
 
@@ -26,6 +23,81 @@ all six classes.
 -   **Frontend:** React, Vite, Tailwind CSS
 -   **Deployment:** Docker, Render, Vercel
 
+
+## CNN Architecture
+
+The model takes a 200 × 200 RGB steel surface image as input and passes
+it through three convolutional blocks. Extracted features are then
+aggregated and passed through fully connected layers to predict one of
+the six defect classes.
+
+``` text
+                 INPUT IMAGE
+                200 × 200 × 3
+                       |
+                       v
+              RESCALING (1./255)
+                       |
+                       v
+             ┌───────────────────┐
+             │  CONVOLUTION 2D   │
+             │  32 filters, 3×3  │
+             │  Batch Normalization
+             │  ReLU Activation  │
+             │  Max Pooling      │
+             └───────────────────┘
+                       |
+                  100 × 100 × 32
+                       |
+                       v
+             ┌───────────────────┐
+             │  CONVOLUTION 2D   │
+             │  64 filters, 3×3  │
+             │  Batch Normalization
+             │  ReLU Activation  │
+             │  Max Pooling      │
+             └───────────────────┘
+                       |
+                   50 × 50 × 64
+                       |
+                       v
+             ┌───────────────────┐
+             │  CONVOLUTION 2D   │
+             │ 128 filters, 3×3  │
+             │  Batch Normalization
+             │  ReLU Activation  │
+             │  Max Pooling      │
+             └───────────────────┘
+                       |
+                   25 × 25 × 128
+                       |
+                       v
+          GLOBAL AVERAGE POOLING
+                       |
+                    128
+                       |
+                       v
+             ┌───────────────────┐
+             │   DENSE: 128      │
+             │ Batch Normalization
+             │  ReLU Activation  │
+             └───────────────────┘
+                       |
+                       v
+             ┌───────────────────┐
+             │    DENSE: 64      │
+             │ Batch Normalization
+             │  ReLU Activation  │
+             └───────────────────┘
+                       |
+                       v
+                DENSE: 6
+              SOFTMAX OUTPUT
+                       |
+                       v
+                PREDICTED CLASS
+```
+
 ## Project Structure
 
 ``` text
@@ -46,47 +118,15 @@ Industrial-Defect/
     └── package.json
 ```
 
-## Running Locally
-
-### Backend
-
-``` bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-API documentation: `http://127.0.0.1:8000/docs`
-
-### Frontend
-
-Create a `.env` file inside `frontend/`:
-
-``` env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-Then run:
-
-``` bash
-cd frontend
-npm install
-npm run dev
-```
-
-## API
-
-  Method   Endpoint     Description
-  -------- ------------ ---------------------------------------
-  GET      `/health`    Backend health check
-  POST     `/predict`   Predict defect from an uploaded image
-
 ## Model Details
 
 -   **Architecture:** Convolutional Neural Network (CNN)
 -   **Framework:** TensorFlow/Keras
 -   **Input Size:** 200 × 200 RGB
 -   **Output:** Six defect classes
+-   **Train Accuracy:** 99.69%
+-   **Validation Accuracy:** 99.41%
+-   **Test Accuracy:** 99.44%
 
 ------------------------------------------------------------------------
 
